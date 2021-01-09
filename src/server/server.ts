@@ -29,6 +29,11 @@ connection.listen();
 
 connection.onInitialize((params) => {
     workspaceRoot = params.rootUri;
+ 
+    const workspacePath = Uri.parse(workspaceRoot).fsPath;
+    syncedSettings = params.initializationOptions.amxxpawn as Settings.SyncedSettings;
+    syncedSettings.compiler.includePaths = syncedSettings.compiler.includePaths.map((path) => resolvePathVariables(path, workspacePath, undefined))
+
 
     return {
         capabilities: {
@@ -83,9 +88,10 @@ connection.onDocumentLinks((params) => {
 });
 
 connection.onDidChangeConfiguration((params) => {
-    const workspacePath = Uri.parse(workspaceRoot).fsPath;
-    syncedSettings = params.settings.amxxpawn as Settings.SyncedSettings;
-    syncedSettings.compiler.includePaths = syncedSettings.compiler.includePaths.map((path) => resolvePathVariables(path, workspacePath, undefined));
+
+    // const workspacePath = Uri.parse(workspaceRoot).fsPath;
+    // syncedSettings = params.settings.amxxpawn as Settings.SyncedSettings;
+    // syncedSettings.compiler.includePaths = syncedSettings.compiler.includePaths.map((path) => resolvePathVariables(path, workspacePath, undefined));
 
     documentsManager.all().forEach(reparseDocument);
 });
